@@ -19,7 +19,14 @@ namespace DBRepository.Repositories
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
-                return await dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates.OrderByDescending(y => y.LastUpdateStart).First().LastUpdateStart).ToListAsync();
+                try
+                {
+                    return await dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates.OrderByDescending(y => y.LastUpdateStart).First().LastUpdateStart).ToListAsync();
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
@@ -27,7 +34,14 @@ namespace DBRepository.Repositories
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
-                return await dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates.OrderByDescending(y => y.LastUpdateStart).First().LastUpdateStart && x.Pair == pair).FirstOrDefaultAsync();
+                try
+                {
+                    return await dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates.OrderByDescending(y => y.LastUpdateStart).First().LastUpdateStart && x.Pair == pair).FirstOrDefaultAsync();
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
@@ -48,7 +62,6 @@ namespace DBRepository.Repositories
                 {
                     return 0;
                 }
-
             }
         }
 
@@ -56,12 +69,19 @@ namespace DBRepository.Repositories
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
-                var rate = dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates
-                                .OrderByDescending(y => y.LastUpdateStart)
-                                .First().LastUpdateStart && x.Pair == pair)
-                                .FirstOrDefault();
+                try
+                {
+                    var rate = dbContext.Rates.Where(x => x.DateUpdate == dbContext.LastUpdates
+                                    .OrderByDescending(y => y.LastUpdateStart)
+                                    .First().LastUpdateStart && x.Pair == pair)
+                                    .FirstOrDefault();
 
-                return rate.Bid;
+                    return rate.Bid;
+                }
+                catch
+                {
+                    return 0;
+                }
             }
         }
 

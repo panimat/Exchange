@@ -16,19 +16,26 @@ namespace DBRepository.Repositories
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
-                var currencies = JObject.Parse(
-                        File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "appsettings.json")))
-                        .SelectToken("Currencies");
-
-                foreach (var item in currencies)
+                try
                 {
-                    var val = item.ToObject<JProperty>().Value.ToString();
+                    var currencies = JObject.Parse(
+                            File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "appsettings.json")))
+                            .SelectToken("Currencies");
 
-                    if (dbContext.Currencies.Where(x => x.Currency == val).Count() == 0)
-                        dbContext.Currencies.Add(new Currencies { Currency = val });
+                    foreach (var item in currencies)
+                    {
+                        var val = item.ToObject<JProperty>().Value.ToString();
+
+                        if (dbContext.Currencies.Where(x => x.Currency == val).Count() == 0)
+                            dbContext.Currencies.Add(new Currencies { Currency = val });
+                    }
+
+                    dbContext.SaveChanges();
                 }
+                catch (Exception ex)
+                {
 
-                dbContext.SaveChanges();
+                }
             }
         }
 

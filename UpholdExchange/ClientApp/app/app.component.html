@@ -1,5 +1,5 @@
 ﻿<div class="page-header">
-    <h3>Uphold Exchange your money </h3>
+    <h3>Uphold Exchange your money</h3>
 </div>
 
 <div class="panel">
@@ -45,72 +45,24 @@
     <h2><span class="label label-default">You will get: {{receivedAsk}}</span></h2>
 </div>
 
-<h1>Rates</h1>
-
 <div class="panel">
+    <h1>Rates</h1>
     <table *ngIf="tableMode; else create" class="table table-striped col-md-3">
         <thead>
             <tr>
                 <td>Pair</td>
                 <td>Ask</td>
+                <td>Bid</td>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let p of rates">
                 <ng-template [ngIf]="rate?.id != p.id" [ngIfElse]="edit">
                     <td class="col-md-1">{{p?.pair}}</td>
-                    <td calss="col-md-1">{{p?.ask}}</td>
+                    <td calss="col-md-2">{{p?.ask}}</td>
+                    <td calss="col-md-1">{{p?.bid}}</td>
                 </ng-template>
             </tr>
         </tbody>
     </table>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-    <!--
-    <ng-template #edit>
-        <td>
-            <input type="text" [(ngModel)]="rate.currency" class="form-control" />
-        </td>
-        <td>
-            <input type="text" [(ngModel)]="rate.ask" class="form-control" />
-        </td>
-        <td>
-            <input type="text" [(ngModel)]="rate.bid" class="form-control" />
-        </td>
-        <td>
-            <input type="button" value="Сохранить" (click)="save()" class="btn btn-sm btn-success" />
-            <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
-        </td>
-    </ng-template>
-        -->
-    <!--
-    <ng-template #create>
-        <div class="form-group">
-            <label>Валюта</label>
-            <input type="text" [(ngModel)]="rate.currency" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Спрос</label>
-            <input type="text" [(ngModel)]="product.ask" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Продажа</label>
-            <input type="text" [(ngModel)]="product.bid" class="form-control" />
-        </div>
-        <div>
-            <input type="button" value="Сохранить" (click)="save()" class="btn btn-success" />
-            <input type="button" value="Отмена" (click)="cancel()" class="btn btn-warning" />
-        </div>
-    </ng-template>
-        -->
