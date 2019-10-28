@@ -1,0 +1,116 @@
+﻿<div class="page-header">
+    <h3>Uphold Exchange your money </h3>
+</div>
+
+<div class="panel">
+    <div class="form-inline">
+        <div class="form-group">
+            <h5>Enter sum to change:</h5>
+            <div class="col-md-4">
+                <input class="form-control" [(ngModel)]="sumToAsk" (change)="setSum($event.target.value)" placeholder="Sum To Ask" name="sumToAsk">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h5>Choose currency to give:</h5>
+            <div class="col-md-4">
+                <form>
+                    <select class="form-control" [(ngModel)]="firstPair" (change)="setPair($event.target.value)">
+                        <option value="" disabled selected>Select your currency</option>
+                        <option *ngFor="let p of currencies" value={{p?.currency}}>{{p?.currency}}</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h5>Choose currency to get:</h5>
+            <div class="col-md-4">
+                <form>
+                    <select class="form-control" placeholder="Choose your option" [(ngModel)]="secondPair" (change)="setPair2($event.target.value)">
+                        <option value="" disabled selected>Select currrency to get</option>
+                        <option *ngFor="let p of currencies" value={{p?.currency}}>{{p?.currency}}</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4">
+                <input type="button" value="Change" class="btn btn-sm btn-primary" (click)="loadAsk()" />
+            </div>
+        </div>
+    </div>
+
+    <h2><span class="label label-default">You will get: {{receivedAsk}}</span></h2>
+</div>
+
+<h1>Rates</h1>
+
+<div class="panel">
+    <table *ngIf="tableMode; else create" class="table table-striped col-md-3">
+        <thead>
+            <tr>
+                <td>Pair</td>
+                <td>Ask</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let p of rates">
+                <ng-template [ngIf]="rate?.id != p.id" [ngIfElse]="edit">
+                    <td class="col-md-1">{{p?.pair}}</td>
+                    <td calss="col-md-1">{{p?.ask}}</td>
+                </ng-template>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--
+    <ng-template #edit>
+        <td>
+            <input type="text" [(ngModel)]="rate.currency" class="form-control" />
+        </td>
+        <td>
+            <input type="text" [(ngModel)]="rate.ask" class="form-control" />
+        </td>
+        <td>
+            <input type="text" [(ngModel)]="rate.bid" class="form-control" />
+        </td>
+        <td>
+            <input type="button" value="Сохранить" (click)="save()" class="btn btn-sm btn-success" />
+            <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
+        </td>
+    </ng-template>
+        -->
+    <!--
+    <ng-template #create>
+        <div class="form-group">
+            <label>Валюта</label>
+            <input type="text" [(ngModel)]="rate.currency" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Спрос</label>
+            <input type="text" [(ngModel)]="product.ask" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Продажа</label>
+            <input type="text" [(ngModel)]="product.bid" class="form-control" />
+        </div>
+        <div>
+            <input type="button" value="Сохранить" (click)="save()" class="btn btn-success" />
+            <input type="button" value="Отмена" (click)="cancel()" class="btn btn-warning" />
+        </div>
+    </ng-template>
+        -->
