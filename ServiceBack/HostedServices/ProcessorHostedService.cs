@@ -31,7 +31,7 @@ namespace ServiceBack.HostedServices
         {
             _logger.LogInformation("Timed Hosted Service running.");
 
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
+            _timer = new Timer(GetMoney, null, TimeSpan.Zero,
                 TimeSpan.FromMinutes((double)JObject.Parse(
                     File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "appsettings.json")))
                     .SelectToken("Frequency").First.ToObject<JProperty>().Value));
@@ -39,18 +39,26 @@ namespace ServiceBack.HostedServices
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private void GetMoney(object state)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var serviceProvider = scope.ServiceProvider;
-                var lastUpdateRepository = (ILastUpdateRepository)serviceProvider.GetService(typeof(ILastUpdateRepository));
-                var currencyRepository = (ICurrencyRepository)serviceProvider.GetService(typeof(ICurrencyRepository));
-
-                lastUpdateRepository.SetLastUpdate();
-                foreach (var item in currencyRepository.GetPairs())
+                try
                 {
-                    testRequest(item);
+                    var serviceProvider = scope.ServiceProvider;
+                    var lastUpdateRepository = (ILastUpdateRepository)serviceProvider.GetService(typeof(ILastUpdateRepository));
+                    var currencyRepository = (ICurrencyRepository)serviceProvider.GetService(typeof(ICurrencyRepository));
+
+                    lastUpdateRepository.SetLastUpdate();
+                    
+                    foreach (var item in currencyRepository.GetPairs())
+                    {
+                        testRequest(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation(ex.Message);
                 }
             }
         }
@@ -60,39 +68,57 @@ namespace ServiceBack.HostedServices
             WebRequest request = WebRequest.Create("https://api.uphold.com/v0/ticker/" + pair);
 
             request.Credentials = CredentialCache.DefaultCredentials;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            //Console.WriteLine(response.StatusDescription);
-            Stream dataStream = response.GetResponseStream();
+            HttpWebResponse response = null;
+            Stream dataStream = null;
 
-            if (response.StatusDescription == "OK")
+            try
             {
-                StreamReader reader = new StreamReader(dataStream);
+                response = (HttpWebResponse)request.GetResponse();
 
-                string responseFromServer = reader.ReadToEnd();
-                //Console.WriteLine(responseFromServer);
-                testParse(responseFromServer, pair);
+                dataStream = response.GetResponseStream();
 
-                reader.Close();
+                if (response.StatusDescription == "OK")
+                {
+                    StreamReader reader = new StreamReader(dataStream);
+                    string responseFromServer = reader.ReadToEnd();
+
+                    parseResponse(responseFromServer, pair);
+
+                    reader.Close();
+                }
             }
-
-            dataStream.Close();
-            response.Close();
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Problem with http request or response /n" + ex.Message);
+            }
+            finally
+            {
+                dataStream.Close();
+                response.Close();
+            }
         }
 
-        private void testParse(string jsonExample, string pair)
+        private void parseResponse(string jsonExample, string pair)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var serviceProvider = scope.ServiceProvider;
-                var lastUpdateRepository = (ILastUpdateRepository)serviceProvider.GetService(typeof(ILastUpdateRepository));
-                var rateRepository = (IRateRepository)serviceProvider.GetService(typeof(IRateRepository));
+                try
+                {
+                    var serviceProvider = scope.ServiceProvider;
+                    var lastUpdateRepository = (ILastUpdateRepository)serviceProvider.GetService(typeof(ILastUpdateRepository));
+                    var rateRepository = (IRateRepository)serviceProvider.GetService(typeof(IRateRepository));
 
-                Rate rate = JsonConvert.DeserializeObject<Rate>(jsonExample);
+                    Rate rate = JsonConvert.DeserializeObject<Rate>(jsonExample);
 
-                rate.Pair = pair;
-                rate.DateUpdate = lastUpdateRepository.GetLastUpdate().Result.LastUpdateStart;
+                    rate.Pair = pair;
+                    rate.DateUpdate = lastUpdateRepository.GetLastUpdate().Result.LastUpdateStart;
 
-                rateRepository.AddRate(rate);
+                    rateRepository.AddRate(rate);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation("Problem with adding rates to DB /n" + ex.Message);
+                }
             }
         }
         

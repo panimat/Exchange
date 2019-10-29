@@ -7,7 +7,8 @@ import { timer } from 'rxjs';
 @Component({
     selector: 'app',
     templateUrl: './app.component.html',
-    providers: [DataService]
+    //styleUrls: [ './css/app.component.css' ],
+    providers: [ DataService ]
 })
 
 export class AppComponent implements OnInit {
@@ -21,6 +22,7 @@ export class AppComponent implements OnInit {
     secondPair: string;
     receivedAsk: number;
     valid: boolean;
+    timerTime: number = 300000;
 
     constructor(private dataService: DataService) { }
 
@@ -62,7 +64,7 @@ export class AppComponent implements OnInit {
 
     //update data in table of rate
     oberserableTimer() {
-        const source = timer(0, 300000);
+        const source = timer(0, this.timerTime);
         source.subscribe(val => {
             console.log("I load rates by timer");
             this.loadRates();

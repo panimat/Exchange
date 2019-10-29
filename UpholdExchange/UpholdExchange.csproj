@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\app\View\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
@@ -44,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\css\app.component.css" />
     <TypeScriptCompile Include="ClientApp\app\currency.ts" />
   </ItemGroup>
 
