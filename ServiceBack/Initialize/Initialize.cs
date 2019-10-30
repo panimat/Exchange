@@ -19,9 +19,9 @@ namespace ServiceBack.Initialize
             logger.LogInformation("Configure business layer services...");
             RegisterServices();
             logger.LogInformation("Configure business layer services Done!");
-            logger.LogInformation("Setup Entity Framework");
             services.AddDataServices(configuration, logger);
         }
+
 
         private static void RegisterServices()
         {

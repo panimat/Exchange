@@ -1,7 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Rate } from './rate';
-import { Currency } from './currency';
 
 @Injectable()
 export class DataService {

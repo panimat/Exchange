@@ -4,32 +4,25 @@ using DBRepository.Interfaces;
 using System.Threading.Tasks;
 using Models;
 using System.Linq;
-using Newtonsoft.Json.Linq;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Options;
+
 
 namespace DBRepository.Repositories
 {
     public class CurrencyRepository : BaseRepository, ICurrencyRepository
     {
-        public CurrencyRepository(string connectionString, IRepositoryContextFactory contextFactory) : base(connectionString, contextFactory)
+        public CurrencyRepository(string connectionString, IRepositoryContextFactory contextFactory, IOptions<CurrencyOptions> currencyOptions) : base(connectionString, contextFactory)
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
                 try
                 {
-                    var currencies = JObject.Parse(
-                            File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "appsettings.json")))
-                            .SelectToken("Currencies");
-
-                    foreach (var item in currencies)
-                    {
-                        var val = item.ToObject<JProperty>().Value.ToString();
-
-                        if (dbContext.Currencies.Where(x => x.Currency == val).Count() == 0)
-                            dbContext.Currencies.Add(new Currencies { Currency = val });
-                    }
-
+                    foreach (var item in currencyOptions.Value.Currency)                    
+                        if (dbContext.Currencies.Where(x => x.Currency == item).Count() == 0)
+                            dbContext.Currencies.Add(new Currencies { Currency = item });
+                    
                     dbContext.SaveChanges();
                 }
                 catch (Exception ex)

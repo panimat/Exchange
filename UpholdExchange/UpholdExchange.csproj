@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
@@ -30,10 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\app.config.ts" />
     <None Remove="ClientApp\app\currency.ts" />
+    <None Remove="ClientApp\app\models\User.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\app\environment\" />
     <Folder Include="ClientApp\app\View\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
@@ -45,8 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\app.config.ts" />
     <TypeScriptCompile Include="ClientApp\app\css\app.component.css" />
-    <TypeScriptCompile Include="ClientApp\app\currency.ts" />
+    <TypeScriptCompile Include="ClientApp\app\models\currency.ts" />
+    <TypeScriptCompile Include="ClientApp\app\models\user.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

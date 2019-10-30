@@ -1,14 +1,14 @@
-﻿import { Component, OnInit, OnChanges } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { DataService } from './data.service';
-import { Rate } from './rate';
-import { Currency } from './currency';
+import { Rate } from './models/rate';
+import { Currency } from './models/currency';
 import { timer } from 'rxjs';
 
 @Component({
     selector: 'app',
+    //styleUrls: ['./app.component.css'],
     templateUrl: './app.component.html',
-    //styleUrls: [ './css/app.component.css' ],
-    providers: [ DataService ]
+    providers: [DataService]
 })
 
 export class AppComponent implements OnInit {
@@ -36,10 +36,10 @@ export class AppComponent implements OnInit {
     //currency to give
     setPair(val: any) {
         this.firstPair = val;
-               
+
         if (this.validSet())
             this.loadAsk(); // get sum to give ask * sumToGive
-        
+
         else this.receivedAsk = 0;
     }
 
@@ -57,8 +57,8 @@ export class AppComponent implements OnInit {
     setSum(val: any) {
         this.sumToGive = val;
 
-        if (this.validSet()) 
-            this.loadAsk();        
+        if (this.validSet())
+            this.loadAsk();
         else this.receivedAsk = 0;
     }
 
