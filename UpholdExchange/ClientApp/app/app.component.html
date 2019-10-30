@@ -7,7 +7,7 @@
         <div class="form-group">
             <h5>Enter sum to change:</h5>
             <div class="col-md-4">
-                <input class="form-control" [(ngModel)]="sumToAsk" (change)="setSum($event.target.value)" placeholder="Sum To Ask" name="sumToAsk">
+                <input id="sum" class="form-control" [(ngModel)]="sumToAsk" (change)="setSum($event.target.value)" placeholder="Sum To Ask" name="sumToAsk">
             </div>
         </div>
 
