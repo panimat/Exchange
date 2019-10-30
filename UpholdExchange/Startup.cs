@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using ServiceBack.Initialize;
+using Options;
+using System.Linq;
 
 namespace UpholdExchange
 {
@@ -23,6 +26,17 @@ namespace UpholdExchange
         {
             services.AddMvc();
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                     .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/account/login");
+                });
+
+            var abc = Configuration.GetSection("Currencies").GetChildren().ToArray().Select(c => c.Value).ToArray();
+
+            services.Configure<CurrencyOptions>(options => Configuration.GetSection("Currencies").Bind(options));
+            services.Configure<UpdateOptions>(options => Configuration.GetSection("Frequency").Bind(options));
+            
             services.AddBusinessServices(Configuration, _logger);
         }
 
@@ -38,6 +52,7 @@ namespace UpholdExchange
                 });                
             }
 
+            app.UseAuthentication();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvc();

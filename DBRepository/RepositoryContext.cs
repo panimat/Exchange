@@ -13,5 +13,6 @@ namespace DBRepository
         public DbSet<Currencies> Currencies { get; set; }
         public DbSet<LastUpdate> LastUpdates { get; set; }
         public DbSet<Rate> Rates { get; set; }        
+        public DbSet<User> Users { get; set; }
     }
 }

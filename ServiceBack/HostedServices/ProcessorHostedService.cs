@@ -4,13 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json.Linq;
-using System.IO;
 using Models;
 using DBRepository.Interfaces;
-using System.Net;
+using System.Net.Http;
 using Newtonsoft.Json;
+using Options;
 
 namespace ServiceBack.HostedServices
 { 
@@ -18,23 +18,22 @@ namespace ServiceBack.HostedServices
     {
         private readonly ILogger<ProcessorHostedService> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IOptions<UpdateOptions> _updateOptions;
         private Timer _timer;
 
 
-        public ProcessorHostedService(ILogger<ProcessorHostedService> logger, IServiceScopeFactory scopeFactory)
+        public ProcessorHostedService(ILogger<ProcessorHostedService> logger, IServiceScopeFactory scopeFactory, IOptions<UpdateOptions> optionsUpdate)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;
+            _updateOptions = optionsUpdate;
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Timed Hosted Service running.");
 
-            _timer = new Timer(GetMoney, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes((double)JObject.Parse(
-                    File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "appsettings.json")))
-                    .SelectToken("Frequency").First.ToObject<JProperty>().Value));
+            _timer = new Timer(GetMoney, null, TimeSpan.Zero, TimeSpan.FromMinutes(_updateOptions.Value.FrequencyUpdateDB));
 
             return Task.CompletedTask;
         }
@@ -65,36 +64,20 @@ namespace ServiceBack.HostedServices
 
         private void testRequest(string pair)
         {
-            WebRequest request = WebRequest.Create("https://api.uphold.com/v0/ticker/" + pair);
-
-            request.Credentials = CredentialCache.DefaultCredentials;
-            HttpWebResponse response = null;
-            Stream dataStream = null;
-
-            try
+            using (var client = new HttpClient())
             {
-                response = (HttpWebResponse)request.GetResponse();
-
-                dataStream = response.GetResponseStream();
-
-                if (response.StatusDescription == "OK")
+                try
                 {
-                    StreamReader reader = new StreamReader(dataStream);
-                    string responseFromServer = reader.ReadToEnd();
+                    //Get http for pair
+                    string response = client.GetStringAsync("https://api.uphold.com/v0/ticker/" + pair).Result;
 
-                    parseResponse(responseFromServer, pair);
+                    parseResponse(response, pair);
 
-                    reader.Close();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("Problem with http request or response /n" + ex.Message);
-            }
-            finally
-            {
-                dataStream.Close();
-                response.Close();
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogInformation("Problem with http request or response /n" + ex.Message);
+                }
             }
         }
 
