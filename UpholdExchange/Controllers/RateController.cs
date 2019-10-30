@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Models;
@@ -25,7 +26,7 @@ namespace UpholdExchange.Controllers
         [HttpGet("{pair}/{sum}")]
         public double Get(string pair, double sum)
         {
-            return _rateRepository.GetAsk(pair) * sum;
+            return Math.Round(_rateRepository.GetAsk(pair) * sum, 3);
         }
 
         [HttpPost]
