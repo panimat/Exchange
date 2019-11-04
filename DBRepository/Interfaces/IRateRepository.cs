@@ -4,13 +4,12 @@ using System.Collections.Generic;
 
 namespace DBRepository.Interfaces
 {
-    public interface IRateRepository
+    public interface IRateRepository : IRepository<Rate>
     {
-        Task<IEnumerable<Rate>> GetRates();
-        Task<Rate> GetRates(string pair);
         double GetAsk(string pair);
         double GetBid(string pair);
-        Task AddRate(Rate rate);
+        Task<Rate> GetByName(string name);
+
     }
 
 }

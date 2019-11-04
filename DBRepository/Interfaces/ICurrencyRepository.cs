@@ -4,10 +4,9 @@ using Models;
 
 namespace DBRepository.Interfaces
 {
-    public interface ICurrencyRepository
+    public interface ICurrencyRepository : IRepository<Currencies>
     {
-        Task SetCurrencies(IEnumerable<Currencies> currencies);
-        Task<IEnumerable<Currencies>> GetCurrencies();
+        Task AddAllCurrencies(IEnumerable<Currencies> currencies);
         IEnumerable<string> GetPairs();
     }
 }

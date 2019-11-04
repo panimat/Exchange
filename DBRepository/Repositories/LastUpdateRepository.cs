@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace DBRepository.Repositories
 {
@@ -14,13 +15,26 @@ namespace DBRepository.Repositories
 
         }
 
-        public async Task SetLastUpdate()
+        public async Task Add(LastUpdate item)
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
-                await dbContext.LastUpdates.AddAsync(new LastUpdate() { LastUpdateStart = DateTime.Now });
+                await dbContext.LastUpdates.AddAsync(item);
 
                 dbContext.SaveChanges();
+            }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<LastUpdate>> GetAll()
+        {
+            using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
+            {
+                return await dbContext.LastUpdates.ToListAsync();
             }
         }
 
@@ -30,6 +44,16 @@ namespace DBRepository.Repositories
             {
                 return await dbContext.LastUpdates.OrderByDescending(x => x.LastUpdateStart).FirstOrDefaultAsync();
             }
+        }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(LastUpdate item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

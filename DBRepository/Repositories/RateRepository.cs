@@ -15,7 +15,7 @@ namespace DBRepository.Repositories
 
         }
 
-        public async Task<IEnumerable<Rate>> GetRates()
+        public async Task<IEnumerable<Rate>> GetAll()
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
@@ -30,7 +30,7 @@ namespace DBRepository.Repositories
             }
         }
 
-        public async Task<Rate> GetRates(string pair)
+        public async Task<Rate> GetByName(string pair)
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
@@ -85,7 +85,7 @@ namespace DBRepository.Repositories
             }
         }
 
-        public async Task AddRate(Rate rate)
+        public async Task Add(Rate rate)
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
@@ -100,6 +100,21 @@ namespace DBRepository.Repositories
                     var abc = ex.Message;
                 }
             }
+        }
+
+        public void Save()
+        {
+            
+        }
+
+        public void Update(Rate rate)
+        {
+
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }

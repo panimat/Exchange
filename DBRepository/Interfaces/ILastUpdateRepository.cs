@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 
 namespace DBRepository.Interfaces
 {
-    public interface ILastUpdateRepository
+    public interface ILastUpdateRepository : IRepository<LastUpdate>
     {
         Task<LastUpdate> GetLastUpdate();
-        Task SetLastUpdate();
     }
 }

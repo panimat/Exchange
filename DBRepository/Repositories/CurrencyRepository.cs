@@ -20,8 +20,7 @@ namespace DBRepository.Repositories
                 try
                 {
                     foreach (var item in currencyOptions.Value.Currency)                    
-                        if (dbContext.Currencies.Where(x => x.Currency == item).Count() == 0)
-                            dbContext.Currencies.Add(new Currencies { Currency = item });
+                        Add(new Currencies { Currency = item });
                     
                     dbContext.SaveChanges();
                 }
@@ -32,7 +31,16 @@ namespace DBRepository.Repositories
             }
         }
 
-        public async Task SetCurrencies(IEnumerable<Currencies> currencies)
+        public async Task Add(Currencies item)
+        {
+            using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
+            {
+                if (dbContext.Currencies.Where(x => x.Currency == item.Currency).Count() == 0)
+                    await dbContext.Currencies.AddAsync(item);
+            }
+        }
+
+        public async Task AddAllCurrencies(IEnumerable<Currencies> currencies)
         {
             foreach (var item in currencies)
             {
@@ -46,7 +54,12 @@ namespace DBRepository.Repositories
             }
         }
 
-        public async Task<IEnumerable<Currencies>> GetCurrencies()
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Currencies>> GetAll()
         {
             using (var dbContext = ContextFactory.CreateDBContext(ConnectionString))
             {
@@ -56,7 +69,7 @@ namespace DBRepository.Repositories
         
         public IEnumerable<string> GetPairs()
         {
-            var currencies = this.GetCurrencies().Result.ToList();
+            var currencies = this.GetAll().Result.ToList();
 
             var pairs = new List<string>();
 
@@ -68,6 +81,16 @@ namespace DBRepository.Repositories
                 }
 
             return pairs;
+        }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Currencies item)
+        {
+            throw new NotImplementedException();
         }
     }
 }
